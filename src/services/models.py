@@ -12,4 +12,4 @@ class YoloFoodModel:
         result = self.yolo.predict(payload)[0]
         # Plot segmentations on image
         im_seg = result.plot()
-        return PredictionResult(img_seg=im_seg, results=result.to_json())
+        return PredictionResult(img_seg=im_seg, results=result.tojson())
