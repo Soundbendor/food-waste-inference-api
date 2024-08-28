@@ -32,6 +32,7 @@ async def post_predict(
     # return {"img": io.BytesIO(im_png.tobytes()).getvalue(), "results": preds.results}
     return Response(
         content=io.BytesIO(im_png.tobytes()).getvalue(),
+        headers={x.name: x for x in preds.results}
         headers={"results": preds.results},
         media_type="image/png",
     )
