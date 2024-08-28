@@ -30,6 +30,6 @@ async def post_predict(
     # TODO: try-except for this logic, catch HTTPException
     return Response(
         content=io.BytesIO(im_png.tobytes()).getvalue(),
-        headers=preds.results,
+        headers={"results": preds.results},
         media_type="image/png",
     )
