@@ -1,0 +1,13 @@
+from starlette.config import Config
+from starlette.datastructures import Secret
+
+APP_VERSION = "0.2.0"
+APP_NAME = "Binsight CV"
+API_PREFIX = "/api"
+
+config = Config(".env")
+
+DEVICE_API_KEYS: Secret = config("API_KEYS", cast=Secret)
+IS_DEBUG: bool = config("IS_DEBUG", cast=bool, default=False)
+
+MODEL_PATH: str = ""

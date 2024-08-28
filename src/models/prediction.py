@@ -1,6 +1,7 @@
+import numpy as np
 from pydantic import BaseModel
 
 
-class HousePredictionResult(BaseModel):
-    median_house_value: int
-    currency: str = "USD"
+class PredictionResult(BaseModel):
+    img_seg: np.ndarray
+    results: dict

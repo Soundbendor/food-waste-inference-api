@@ -1,23 +1,31 @@
-from fastapi import APIRouter, Depends
-from fastapi_skeleton.core import security
-from fastapi_skeleton.models.payload import HousePredictionPayload
-from fastapi_skeleton.models.prediction import HousePredictionResult
-from fastapi_skeleton.services.models import HousePriceModel
-from starlette.requests import Request
+import io
+
+import cv2
+import numpy as np
+from fastapi import APIRouter, Depends, HTTPException, Response
+
+from src.core import security
+from src.models.prediction import PredictionResult
+from src.services.models import YoloFoodModel
 
 router = APIRouter()
 
 
-# TODO: figure out response_model?
-# @router.post("/predict", response_model=HousePredictionResult, name="predict")
 @router.post("/predict", name="predict")
-# TODO: add return type
-def post_predict(
-    img: HousePredictionPayload,
+async def post_predict(
+    img: UploadFile,
     _: bool = Depends(security.validate_request),
 ):
-    pass
-    # model: HousePriceModel = request.app.state.model
-    # prediction: HousePredictionResult = model.predict(block_data)
-    #
-    # return prediction
+    # use cv2 to read image in
+    im_bin = await img.read()
+    im_np = np.fromstring(im_bin, np.uint8)
+    img = cv2.imdecode(im_np, cv2.IMREAD_COLOR)
+    # Make call to prediction API, return cv2 img with predictions
+    model: YoloFoodModel = img.app.state.model
+    preds: PredictionResult = model.predict(img)
+    _, im_png = cv2.imencode(".png", preds.img_seg)
+    return Response(
+        content=io.BytesIO(im_png.tobytes()).getvalue(),
+        headers=preds.results,
+        media_type="image/png",
+    )
