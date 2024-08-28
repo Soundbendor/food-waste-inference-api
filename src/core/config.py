@@ -7,7 +7,7 @@ API_PREFIX = "/api"
 
 config = Config(".env")
 
-DEVICE_API_KEYS: Secret = config("API_KEYS", cast=Secret)
+API_KEY: Secret = config("API_KEYS", cast=Secret)
 IS_DEBUG: bool = config("IS_DEBUG", cast=bool, default=False)
 
 MODEL_PATH: str = ""

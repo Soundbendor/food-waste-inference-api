@@ -2,7 +2,7 @@ import io
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
 
 from src.core import security
 from src.models.prediction import PredictionResult
@@ -19,11 +19,13 @@ async def post_predict(
     # use cv2 to read image in
     im_bin = await img.read()
     im_np = np.fromstring(im_bin, np.uint8)
-    img = cv2.imdecode(im_np, cv2.IMREAD_COLOR)
+    img_cv = cv2.imdecode(im_np, cv2.IMREAD_COLOR)
     # Make call to prediction API, return cv2 img with predictions
+    # TODO: how to get state from request?
     model: YoloFoodModel = img.app.state.model
-    preds: PredictionResult = model.predict(img)
+    preds: PredictionResult = model.predict(img_cv)
     _, im_png = cv2.imencode(".png", preds.img_seg)
+    # TODO: try-except for this logic, catch HTTPException
     return Response(
         content=io.BytesIO(im_png.tobytes()).getvalue(),
         headers=preds.results,
