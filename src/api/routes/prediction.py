@@ -3,6 +3,7 @@ import io
 import cv2
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
+from fastapi.responses import FileResponse
 from starlette.requests import Request
 
 from src.core import security
@@ -28,9 +29,9 @@ async def post_predict(
     preds: PredictionResult = model.predict(img_cv)
     _, im_png = cv2.imencode(".png", preds.img_seg)
     # TODO: try-except for this logic, catch HTTPException
-    return {"img": io.BytesIO(im_png.tobytes()).getvalue(), "results": preds.results}
-    # return Response(
-    #     content=io.BytesIO(im_png.tobytes()).getvalue(),
-    #     headers={"results": preds.results},
-    #     media_type="image/png",
-    # )
+    # return {"img": io.BytesIO(im_png.tobytes()).getvalue(), "results": preds.results}
+    return Response(
+        content=io.BytesIO(im_png.tobytes()).getvalue(),
+        headers={"results": preds.results},
+        media_type="image/png",
+    )
