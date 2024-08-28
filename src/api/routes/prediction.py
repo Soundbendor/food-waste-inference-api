@@ -28,8 +28,9 @@ async def post_predict(
     preds: PredictionResult = model.predict(img_cv)
     _, im_png = cv2.imencode(".png", preds.img_seg)
     # TODO: try-except for this logic, catch HTTPException
-    return Response(
-        content=io.BytesIO(im_png.tobytes()).getvalue(),
-        headers={"results": preds.results},
-        media_type="image/png",
-    )
+    return {"img": io.BytesIO(im_png.tobytes()).getvalue(), "results": preds.results}
+    # return Response(
+    #     content=io.BytesIO(im_png.tobytes()).getvalue(),
+    #     headers={"results": preds.results},
+    #     media_type="image/png",
+    # )
