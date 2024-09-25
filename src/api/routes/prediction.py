@@ -4,11 +4,10 @@ import cv2
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
-from starlette.requests import Request
-
 from src.core import security
 from src.models.prediction import PredictionResult
 from src.services.models import YoloFoodModel
+from starlette.requests import Request
 
 router = APIRouter()
 
@@ -32,6 +31,6 @@ async def post_predict(
     # return {"img": io.BytesIO(im_png.tobytes()).getvalue(), "results": preds.results}
     return Response(
         content=io.BytesIO(im_png.tobytes()).getvalue(),
-        headers={x["name"]: x for x in preds.results},
+        headers={"detections": {x["name"]: x for x in preds.results}},
         media_type="image/png",
     )
